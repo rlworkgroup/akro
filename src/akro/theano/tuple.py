@@ -1,5 +1,5 @@
-from akro.tuple import Tuple as AkroTuple
 from akro.theano import _util
+from akro.tuple import Tuple as AkroTuple
 
 
 class Tuple(AkroTuple):

@@ -91,7 +91,8 @@ class Dict(AkroDict):
                 space.flatten(xi)
                 for space, xi in zip(self.spaces.values(), x.values())
             ],
-            axis=-1)
+            axis=-1,
+        )
 
     def unflatten(self, x):
         """
@@ -139,7 +140,8 @@ class Dict(AkroDict):
                 for key, xi in zip(self.spaces.keys(), x.values())
                 if key in keys
             ],
-            axis=-1)
+            axis=-1,
+        )
 
     def unflatten_with_keys(self, x, keys: Iterable):
         """

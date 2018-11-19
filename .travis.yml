@@ -1,0 +1,28 @@
+
+language: python
+
+python:
+  - "3.5"
+  - "3.6"
+
+git:
+  depth: false
+
+install:
+  - pip install .[all]
+  - pip install .[dev]
+  - pip install coveralls codacy-coverage
+
+script:
+  - scripts/travisci/check_precommit.sh
+  - flake8 src
+  - flake8 --exclude=src,docs --extend-ignore=D
+  - pytest --cov=akro
+
+after_script:
+  - coverage xml
+  - bash <(curl -s https://codecov.io/bash)
+  - coveralls
+
+notifications:
+  email: false

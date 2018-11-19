@@ -46,8 +46,10 @@ class Dict(Space):
             JSON (dict)
 
         """
-        return {key: space.to_jsonable([sample[key] for sample in sample_n])
-                for key, space in self.spaces.items()}
+        return {
+            key: space.to_jsonable([sample[key] for sample in sample_n])
+            for key, space in self.spaces.items()
+        }
 
     def from_jsonable(self, sample_n):
         """
