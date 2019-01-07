@@ -15,6 +15,7 @@ install:
 
 script:
   - scripts/travisci/check_precommit.sh
+  - flake8 --version
   - flake8 src
   - flake8 --exclude=src,docs --extend-ignore=D
   - pytest --cov=akro
