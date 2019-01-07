@@ -1,3 +1,5 @@
+"""Spaces.Tuple for Theano."""
+
 from akro.theano import _util
 from akro.tuple import Tuple as AkroTuple
 

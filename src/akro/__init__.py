@@ -1,3 +1,4 @@
+"""A library containing types of Spaces."""
 from akro.box import Box
 from akro.dict import Dict
 from akro.discrete import Discrete

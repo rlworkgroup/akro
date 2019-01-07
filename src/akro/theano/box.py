@@ -1,3 +1,4 @@
+"""Spaces.Box for Theano."""
 import theano
 
 from akro.box import Box as AkroBox

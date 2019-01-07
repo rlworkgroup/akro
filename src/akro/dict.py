@@ -1,3 +1,8 @@
+"""Cartesian product of multiple named Spaces (also known as a dict of Spaces).
+
+This Space produces samples which are dicts, where the values of those dicts
+are drawn from the values of this Space.
+"""
 from collections import OrderedDict
 
 from akro.space import Space
@@ -133,10 +138,10 @@ class Dict(Space):
 
     def new_tensor_variable(self, name, extra_dims):
         """
-        Return a new tensor variable in the TF graph.
+        Create a tensor variable given the name and extra dimensions.
 
-        Returns:
-            Tensor
-
+        :param name: name of the variable
+        :param extra_dims: extra dimensions in the front
+        :return: the created tensor variable
         """
         raise NotImplementedError

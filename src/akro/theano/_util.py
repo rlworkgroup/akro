@@ -1,3 +1,4 @@
+"""Private module containing utilities for working with Theno."""
 import theano.tensor as TT
 
 
