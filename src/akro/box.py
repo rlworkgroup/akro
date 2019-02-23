@@ -64,6 +64,7 @@ class Box(Space):
 
     @property
     def dtype(self):
+        """Return the dtype of samples contained in this Space."""
         return self._dtype
 
     @property
