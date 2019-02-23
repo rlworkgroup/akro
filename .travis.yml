@@ -23,7 +23,6 @@ script:
 after_script:
   - coverage xml
   - bash <(curl -s https://codecov.io/bash)
-  - coveralls
 
 notifications:
   email: false
