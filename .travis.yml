@@ -24,5 +24,12 @@ after_script:
   - coverage xml
   - bash <(curl -s https://codecov.io/bash)
 
+deploy:
+  provider: pypi
+  user: "${PYPI_USERNAME}"
+  password: "${PYPI_PASSWORD}"
+  on:
+    tags: true
+
 notifications:
   email: false
