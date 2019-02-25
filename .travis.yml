@@ -21,10 +21,12 @@ jobs:
         on:
           tags: true
 
+before_install:
+  - pip install --upgrade pip  # some TravisCI images have outdated pip
+
 install:
   - pip install .[all]
   - pip install .[dev]
-  - pip install coveralls codacy-coverage
 
 script:
   - scripts/travisci/check_precommit.sh
