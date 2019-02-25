@@ -38,8 +38,8 @@ class Box(Space):
 
         if (self.low == 0).all() and (
                 self.high == 255).all() and dtype != np.uint8:
-            warnings.warn("Creating a garage.spaces.Box with low=0, high=255 "
-                          "and dtype=np.float32.")
+            warnings.warn("Creating a akro.Box with low=0, high=255 and "
+                          "dtype=np.float32.")
 
         self._dtype = dtype
 

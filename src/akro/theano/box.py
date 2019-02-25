@@ -1,6 +1,4 @@
 """Spaces.Box for Theano."""
-import theano
-
 from akro.box import Box as AkroBox
 from akro.theano import _util
 
@@ -17,4 +15,4 @@ class Box(AkroBox):
         :return: the created tensor variable
         """
         return _util.new_tensor(
-            name=name, ndim=extra_dims + 1, dtype=theano.config.floatX)
+            name=name, ndim=extra_dims + 1, dtype=self.dtype)
