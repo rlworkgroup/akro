@@ -10,7 +10,7 @@ repos:
     -   id: pylint
         name: pylint
         entry: pylint
-        args: ['--rcfile=setup.cfg']
+        args: ['-j 0', '--rcfile=setup.cfg']
         stages: [commit, push]
         language: system
         files: \.py$
@@ -23,8 +23,6 @@ repos:
     -   id: check-added-large-files     # Prevent giant files from being committed.
         stages: [commit, push]
     -   id: check-ast                   # Simply check whether files parse as valid python.
-        stages: [commit, push]
-    -   id: check-builtin-literals      # Require literal syntax when initializing empty or zero Python builtin types.
         stages: [commit, push]
     -   id: check-byte-order-marker     # Forbid files which have a UTF-8 byte-order marker
         stages: [commit, push]
@@ -48,6 +46,8 @@ repos:
         stages: [commit, push]
     -   id: detect-private-key          # Checks for the existence of private keys.
         stages: [commit, push]
+    -   id: double-quote-string-fixer   # This hook replaces double quoted strings with single quoted strings.
+        stages: [commit, push]
     -   id: end-of-file-fixer           # Makes sure files end in a newline and only a newline.
         stages: [commit, push]
     -   id: flake8                      # Run flake8 on your python files.
@@ -58,14 +58,21 @@ repos:
         stages: [commit, push]
     -   id: pretty-format-json          # Checks that all your JSON files have keys that are sorted and indented.
         stages: [commit, push]
-    -   id: requirements-txt-fixer      # Sorts entries in requirements.txt, removes 0.0.0 entries
-        stages: [commit, push]
     -   id: trailing-whitespace         # Trims trailing whitespace.
         stages: [commit, push]
-
+# First pass: check format
 -   repo: https://github.com/pre-commit/mirrors-yapf
-    rev: v0.24.0
+    rev: v0.25.0
     hooks:
     -   id: yapf
+        name: Check format by yapf
         args: ['-dpr']
+        stages: [commit, push]
+# Second pass: format in-place
+-   repo: https://github.com/pre-commit/mirrors-yapf
+    rev: v0.25.0
+    hooks:
+    -   id: yapf
+        name: Format in-place by yapf
+        args: ['-ipr']
         stages: [commit, push]
