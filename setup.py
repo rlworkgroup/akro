@@ -25,7 +25,7 @@ extras['dev'] = [
     'pep8-naming',
     'pre-commit',
     'pylint',
-    'pytest',
+    'pytest>=3.6',  # Required for pytest-cov on Python 3.6
     'pytest-cov',
     'sphinx',
     'yapf',
