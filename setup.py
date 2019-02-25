@@ -39,8 +39,9 @@ with open('LICENSE') as f:
 
 setup(
     name='akro',
-    version='0.0.1dev',
+    version='0.0.1dev2',
     author='Reinforcement Learning Working Group',
+    author_email='akro@noreply.github.com',
     description='Spaces types for reinforcement learning',
     url='https://github.com/rlworkgroup/akro',
     packages=find_packages(where="src"),
