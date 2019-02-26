@@ -35,22 +35,24 @@ extras['dev'] = [
 with open('README.md') as f:
     readme = f.read()
 
-with open('LICENSE') as f:
-    license = f.read()
+# Get the package version dynamically
+exec(open('./src/akro/__version__.py').read())
+version = __version__  # noqa: F821, pylint: disable=undefined-variable
 
 setup(
     name='akro',
-    version='0.0.1dev2',
+    version=version,
     author='Reinforcement Learning Working Group',
     author_email='akro@noreply.github.com',
     description='Spaces types for reinforcement learning',
     url='https://github.com/rlworkgroup/akro',
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     install_requires=required,
     extras_require=extras,
-    license=license,
+    license='MIT',
     long_description=readme,
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
