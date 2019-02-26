@@ -12,12 +12,49 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+from recommonmark.parser import CommonMarkParser
+
+# For sphinx-apidoc
+sys.path.insert(0, os.path.abspath('../src/'))
+
+# Markdown parsing
+source_parsers = {
+    '.md': CommonMarkParser,
+}
+
+
+# Auto-generate API documentation for readthedocs.org
+# See https://github.com/rtfd/readthedocs.org/issues/1139#issuecomment-398083449  # noqa: E501
+def run_apidoc(_):
+    ignore_paths = []
+
+    argv = [
+        '-f',
+        '-T',
+        '-M',
+        '-o', './_apidoc',
+        '../src/'
+    ] + ignore_paths  # yapf: disable
+
+    try:
+        # Sphinx 1.7+
+        from sphinx.ext import apidoc
+        apidoc.main(argv)
+    except ImportError:
+        # Sphinx 1.6 (and earlier)
+        from sphinx import apidoc
+        argv.insert(0, apidoc.__file__)
+        apidoc.main(argv)
+
+
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+
 
 # -- Project information -----------------------------------------------------
-
 project = 'akro'
 copyright = '2018, Reinforcement Learning Working Group'
 author = 'Reinforcement Learning Working Group'
@@ -52,8 +89,8 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
