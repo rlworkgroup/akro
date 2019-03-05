@@ -18,7 +18,7 @@ import sys
 from recommonmark.parser import CommonMarkParser
 
 # Get __version__ dynamically
-exec(open('../src/viskit/__version__.py').read())
+exec(open('../src/akro/__version__.py').read())
 version_ = __version__  # noqa: undefined-name
 
 # For sphinx-apidoc
