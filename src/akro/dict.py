@@ -38,10 +38,13 @@ class Dict(Space):
             Boolean
 
         """
-        if isinstance(x, dict):
-            return all(item in self.spaces.items() for item in x.items())
-        else:
+        if not isinstance(x, dict):
             return False
+
+        if not all(k in self.spaces for k in x.keys()):
+            return False
+
+        return all(self.spaces[k].contains(v) for k, v in x.items())
 
     def to_jsonable(self, sample_n):
         """

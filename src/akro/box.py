@@ -38,8 +38,8 @@ class Box(Space):
 
         if (self.low == 0).all() and (
                 self.high == 255).all() and dtype != np.uint8:
-            warnings.warn("Creating a akro.Box with low=0, high=255 and "
-                          "dtype=np.float32.")
+            warnings.warn('Creating a akro.Box with low=0, high=255 and '
+                          'dtype=np.float32.')
 
         self._dtype = dtype
 
@@ -126,7 +126,7 @@ class Box(Space):
 
     def __repr__(self):
         """Compute a representation of the Box Space."""
-        return "Box" + str(self.shape)
+        return 'Box' + str(self.shape)
 
     def __eq__(self, other):
         """Compare two Box Spaces for approximate equality."""

@@ -7,8 +7,14 @@ from akro import Discrete
 
 class TestDict(unittest.TestCase):
     def test_pickleable(self):
-        motion_dict = {"position": Discrete(2), "velocity": Discrete(3)}
-        obj = Dict(motion_dict)
-        round_trip = pickle.loads(pickle.dumps(obj))
+        motion_dict = {'position': Discrete(2), 'velocity': Discrete(3)}
+        sample = {
+            'position': 1,
+            'velocity': 2,
+        }
+        d = Dict(motion_dict)
+        round_trip = pickle.loads(pickle.dumps(d))
+
+        assert d.contains(sample)
         assert round_trip
-        assert round_trip.contains(motion_dict)
+        assert round_trip.contains(sample)
