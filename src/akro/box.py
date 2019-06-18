@@ -1,76 +1,17 @@
 """A Space representing a rectangular region of space."""
-import warnings
-
+import gym.spaces
 import numpy as np
 
+from akro import tf, theano
+from akro.requires import requires_tf, requires_theano
 from akro.space import Space
 
 
-class Box(Space):
+class Box(gym.spaces.Box, Space):
     """A box in R^n.
 
     Each coordinate is bounded above and below.
     """
-
-    def __init__(self, low, high, shape=None, dtype=np.float32):
-        """
-        Initialize the Box.
-
-        Two kinds of bounds are supported, scalars and arrays:
-            Box(-1.0, 1.0, (3,4)) # low and high are scalars, and shape is
-            provided
-            Box(np.array([-1.0,-2.0]), np.array([2.0,4.0])) # low and high are
-            arrays of the same shape
-
-        If dtype is not specified, we assume dtype to be np.float32,
-        but when low=0 and high=255, it is very likely to be np.uint8.
-        We warn user. It is different from gym.Box,
-        where they warn user as long as dtype is not specified.
-        """
-        if shape is None:
-            assert low.shape == high.shape
-            self.low = low
-            self.high = high
-        else:
-            assert np.isscalar(low) and np.isscalar(high)
-            self.low = low + np.zeros(shape)
-            self.high = high + np.zeros(shape)
-
-        if (self.low == 0).all() and (
-                self.high == 255).all() and dtype != np.uint8:
-            warnings.warn('Creating a akro.Box with low=0, high=255 and '
-                          'dtype=np.float32.')
-
-        self._dtype = dtype
-
-    def sample(self):
-        """Uniformly randomly sample a random element of this space."""
-        if self.dtype == np.uint8:
-            # since np.random.randint() does not accept array as input
-            low = np.take(self.low, 0)
-            high = np.take(self.high, 0)
-            return np.random.randint(
-                low=low, high=high + 1, size=self.low.shape).astype(
-                    self.dtype, copy=False)
-        else:
-            return np.random.uniform(
-                low=self.low, high=self.high, size=self.low.shape).astype(
-                    self.dtype, copy=False)
-
-    def contains(self, x):
-        """Return boolean specifying if x is a valid member of this space."""
-        return x.shape == self.shape and (x >= self.low).all() and (
-            x <= self.high).all()
-
-    @property
-    def dtype(self):
-        """Return the dtype of samples contained in this Space."""
-        return self._dtype
-
-    @property
-    def shape(self):
-        """Return the shape of samples contained in this Space."""
-        return self.low.shape
 
     @property
     def flat_dim(self):
@@ -83,67 +24,104 @@ class Box(Space):
         return self.low, self.high
 
     def flatten(self, x):
-        """
-        Return a flattened observation x.
+        """Return a flattened observation x.
+
+        Args:
+            x (:obj:'Iterable`): The object to flatten.
 
         Returns:
-            x (flattened)
+            np.ndarray: An array of x collapsed into one dimension.
 
         """
         return np.asarray(x).flatten()
 
     def unflatten(self, x):
-        """
-        Return an unflattened observation x.
+        """Return an unflattened observation x.
+
+        Args:
+            x (:obj:`Iterable`): The object to unflatten.
 
         Returns:
-            x (unflattened)
+            np.ndarray: An array of x in the shape of self.shape.
 
         """
         return np.asarray(x).reshape(self.shape)
 
-    def flatten_n(self, xs):
-        """
-        Return flattened observations xs.
+    def flatten_n(self, obs):
+        """Return flattened observations obs.
+
+        Args:
+            obs (:obj:`Iterable`): The object to reshape and flatten
 
         Returns:
-            xs (flattened)
+            np.ndarray: An array of obs in a shape inferred by the size of
+                its first element.
 
         """
-        xs = np.asarray(xs)
-        return xs.reshape((xs.shape[0], -1))
+        return np.asarray(obs).reshape((obs.shape[0], -1))
 
-    def unflatten_n(self, xs):
-        """
-        Return unflattened observations xs.
+    def unflatten_n(self, obs):
+        """Return unflattened observation of obs.
+
+        Args:
+            obs (:obj:`Iterable`): The object to reshape and unflatten
 
         Returns:
-            xs (unflattened)
+            np.ndarray: An array of obs in a shape inferred by the size of
+                its first element and self.shape.
 
         """
-        xs = np.asarray(xs)
-        return xs.reshape((xs.shape[0], ) + self.shape)
-
-    def __repr__(self):
-        """Compute a representation of the Box Space."""
-        return 'Box' + str(self.shape)
-
-    def __eq__(self, other):
-        """Compare two Box Spaces for approximate equality."""
-        return isinstance(other, Box) \
-            and np.allclose(self.low, other.low) \
-            and np.allclose(self.high, other.high)
+        return np.asarray(obs).reshape((obs.shape[0], ) + self.shape)
 
     def __hash__(self):
-        """Hash the Box Space by value."""
-        return hash((self.low, self.high))
-
-    def new_tensor_variable(self, name, extra_dims):
         """
-        Create a tensor variable given the name and extra dimensions.
+        Hash the Box Space.
 
-        :param name: name of the variable
-        :param extra_dims: extra dimensions in the front
-        :return: the created tensor variable
+        Returns:
+            int: A hash of the low, high, and shape of the Box.
+
+        Only the first element of low and high are hashed because numpy
+        ndarrays can't be hashed. When a Box is created the low and high
+        bounds are duplicated across the shape of the arrays so any of the
+        values will suffice for the hash. The shape of the Box is added
+        for uniqueness.
+
         """
-        raise NotImplementedError
+        return hash((self.low[0][0], self.high[0][0], self.shape))
+
+    @requires_tf
+    def to_tf_placeholder(self, name, batch_dims):
+        """Create a tensor placeholder from the Space object.
+
+        Args:
+            name (str): name of the variable
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of the object.
+
+        Returns:
+            tf.Tensor: Tensor object with the same properties as
+                the Box where the shape is modified by batch_dims.
+
+        """
+        return tf.placeholder(
+            dtype=self.dtype,
+            shape=[None] * batch_dims + list(self.shape),
+            name=name)
+
+    @requires_theano
+    def to_theano_tensor(self, name, batch_dims):
+        """Create a theano tensor from the Space object.
+
+        Args:
+            name (str): name of the variable
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of the object.
+
+        Returns:
+            theano.tensor.TensorVariable: Tensor object with the
+                same properties as the Box where the shape is
+                modified by batch_dims.
+
+        """
+        return theano.tensor.TensorType(self.dtype,
+                                        (False, ) * (batch_dims + 1))(name)

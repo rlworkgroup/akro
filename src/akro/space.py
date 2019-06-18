@@ -1,72 +1,98 @@
 """The abstract base class for all Space types."""
 
+import abc
 
-class Space:
+import gym.spaces
+
+
+class Space(abc.ABC, gym.spaces.Space):
     """Provides a classification state spaces and action spaces.
 
     Allows you to write generic code that applies to any Environment.
     E.g. to choose a random action.
     """
 
-    def sample(self, seed=0):
-        """Uniformly randomly sample a random element of this space."""
-        raise NotImplementedError
-
-    def contains(self, x):
-        """Return boolean specifying if x is a valid member of this space."""
-        raise NotImplementedError
-
+    @abc.abstractmethod
     def flatten(self, x):
-        """
-        Return a flattened observation x.
+        """Return a flattened observation x.
+
+        Args:
+            x (:obj:`Iterable`): The object to flatten.
 
         Returns:
-            x (flattened)
+            np.ndarray: An array of x collapsed into one dimension.
 
         """
-        raise NotImplementedError
 
+    @abc.abstractmethod
     def unflatten(self, x):
-        """
-        Return an unflattened observation x.
+        """Return an unflattened observation x.
+
+        Args:
+            x (:obj:`Iterable`): The object to unflatten.
 
         Returns:
-            x (unflattened)
+            np.ndarray: An array of x in the shape of self.shape.
 
         """
-        raise NotImplementedError
 
+    @abc.abstractmethod
     def flatten_n(self, xs):
-        """
-        Return flattened observations xs.
+        """Return flattened observations xs.
+
+        Args:
+            xs (:obj:`Iterable`): The object to reshape and flatten
 
         Returns:
-            xs (flattened)
+            np.ndarray: An array of xs in a shape inferred by the size of
+                its first element.
 
         """
-        raise NotImplementedError
 
+    @abc.abstractmethod
     def unflatten_n(self, xs):
-        """
-        Return unflattened observations xs.
+        """Return unflattened observations xs.
+
+        Args:
+            xs (:obj:`Iterable`): The object to reshape and unflatten
 
         Returns:
-            xs (unflattened)
+            np.ndarray: An array of xs in a shape inferred by the size of
+                its first element and self.shape.
 
         """
-        raise NotImplementedError
 
     @property
     def flat_dim(self):
         """Return the length of the flattened vector of the space."""
-        raise NotImplementedError
 
-    def new_tensor_variable(self, name, extra_dims):
-        """
-        Create a tensor variable given the name and extra dimensions.
+    @abc.abstractmethod
+    def to_tf_placeholder(self, name, batch_dims):
+        """Create a tensor placeholder from the Space object.
 
-        :param name: name of the variable
-        :param extra_dims: extra dimensions in the front
-        :return: the created tensor variable
+        Args:
+            name (str): name of the variable
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of the object.
+
+        Returns:
+            tf.Tensor: Tensor object with the same properties as
+                the Dict where the shape is modified by batch_dims.
+
         """
-        raise NotImplementedError
+
+    @abc.abstractmethod
+    def to_theano_tensor(self, name, batch_dims):
+        """Create a theano tensor from the Space object.
+
+        Args:
+            name (str): name of the variable
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of the object.
+
+        Returns:
+            theano.tensor.TensorVariable: Tensor object with the
+                same properties as the Dict where the shape is
+                modified by batch_dims.
+
+        """

@@ -4,116 +4,133 @@ This Space produces samples which are Tuples, where the elments of those Tuples
 are drawn from the components of this Space.
 """
 
+import gym.spaces
 import numpy as np
 
+from akro.requires import requires_tf, requires_theano
 from akro.space import Space
 
 
-class Tuple(Space):
+class Tuple(gym.spaces.Tuple, Space):
     """A Tuple of Spaces which produces samples which are Tuples of samples."""
-
-    def __init__(self, *components):
-        if isinstance(components[0], (list, tuple)):
-            assert len(components) == 1
-            components = components[0]
-        self._components = tuple(components)
-        dtypes = [
-            c.new_tensor_variable("tmp", extra_dims=0).dtype
-            for c in components
-        ]
-        if dtypes and hasattr(dtypes[0], "as_numpy_dtype"):
-            dtypes = [d.as_numpy_dtype for d in dtypes]
-        self._common_dtype = np.core.numerictypes.find_common_type([], dtypes)
-
-    def sample(self):
-        """Uniformly randomly sample a random element of this space."""
-        return tuple(x.sample() for x in self._components)
-
-    @property
-    def components(self):
-        """Each of the spaces making up this Tuple space."""
-        return self._components
-
-    def contains(self, x):
-        """Return boolean specifying if x is a valid member of this space."""
-        return isinstance(x, tuple) and all(
-            c.contains(xi) for c, xi in zip(self._components, x))
 
     @property
     def flat_dim(self):
         """Return the length of the flattened vector of the space."""
-        return np.sum([c.flat_dim for c in self._components])
+        return np.sum([c.flat_dim for c in self.spaces])
 
     def flatten(self, x):
-        """
-        Return a flattened observation x.
+        """Return a flattened observation x.
+
+        Args:
+            x (:obj:`Iterable`): The object to flatten.
 
         Returns:
-            x (flattened)
+            np.ndarray: An array of x collapsed into one dimension.
 
         """
-        return np.concatenate(
-            [c.flatten(xi) for c, xi in zip(self._components, x)])
+        return np.concatenate([c.flatten(xi) for c, xi in zip(self.spaces, x)])
 
-    def flatten_n(self, xs):
-        """
-        Return flattened observations xs.
+    def flatten_n(self, obs):
+        """Return flattened observations obs.
+
+        Args:
+            obs (:obj:`Iterable`): The object to reshape and flatten
 
         Returns:
-            xs (flattened)
+            np.ndarray: An array of obs in a shape inferred by the size of
+                its first element.
 
         """
-        xs_regrouped = [[x[i] for x in xs] for i in range(len(xs[0]))]
+        obs_regrouped = [[x[i] for x in obs] for i in range(len(obs[0]))]
         flat_regrouped = [
-            c.flatten_n(xi) for c, xi in zip(self.components, xs_regrouped)
+            c.flatten_n(xi) for c, xi in zip(self.spaces, obs_regrouped)
         ]
         return np.concatenate(flat_regrouped, axis=-1)
 
     def unflatten(self, x):
-        """
-        Return an unflattened observation x.
+        """Return an unflattened observation x.
+
+        Args:
+            x (:obj:`Iterable`): The object to unflatten.
 
         Returns:
-            x (unflattened)
+            tuple: A tuple of x in the shape of self.shape.
 
         """
-        dims = [c.flat_dim for c in self._components]
-        flat_xs = np.split(x, np.cumsum(dims)[:-1])
-        return tuple(
-            c.unflatten(xi) for c, xi in zip(self._components, flat_xs))
+        dims = [c.flat_dim for c in self.spaces]
+        flat_x = np.split(x, np.cumsum(dims)[:-1])
+        return tuple(c.unflatten(xi) for c, xi in zip(self.spaces, flat_x))
 
-    def unflatten_n(self, xs):
-        """
-        Return unflattened observations xs.
+    def unflatten_n(self, obs):
+        """Return unflattened observations obs.
+
+        Args:
+            obs (:obj:`Iterable`): The object to reshape and unflatten
 
         Returns:
-            xs (unflattened)
+            np.ndarray: An array of obs in a shape inferred by the size of
+                its first element and self.shape.
 
         """
-        dims = [c.flat_dim for c in self._components]
-        flat_xs = np.split(xs, np.cumsum(dims)[:-1], axis=-1)
-        unflat_xs = [
-            c.unflatten_n(xi) for c, xi in zip(self.components, flat_xs)
+        dims = [c.flat_dim for c in self.spaces]
+        flat_obs = np.split(obs, np.cumsum(dims)[:-1], axis=-1)
+        unflat_obs = [
+            c.unflatten_n(xi) for c, xi in zip(self.spaces, flat_obs)
         ]
-        unflat_xs_grouped = list(zip(*unflat_xs))
-        return unflat_xs_grouped
-
-    def __eq__(self, other):
-        """Compute the equality between two Tuple spaces."""
-        if not isinstance(other, Tuple):
-            return False
-        return tuple(self.components) == tuple(other.components)
+        unflat_obs_grouped = list(zip(*unflat_obs))
+        return unflat_obs_grouped
 
     def __hash__(self):
-        """Hash the Tuple space."""
-        return hash(tuple(self.components))
-
-    def new_tensor_variable(self, name, extra_dims):
         """
-        Create a tensor variable given the name and extra dimensions.
+        Hash the Tuple Space.
 
-        :param name: name of the variable
-        :param extra_dims: extra dimensions in the front
-        :return: the created tensor variable
+        Returns:
+            int: A hash of the Tuple's components.
+
         """
-        raise NotImplementedError
+        return hash(tuple(self.spaces))
+
+    @requires_tf
+    def to_tf_placeholder(self, name, batch_dims):
+        """Create a tensor placeholder from the Space object.
+
+        Args:
+            name (str): name to append to the akro type when naming
+                the tensor.  e.g. When name is 'tmp' - 'Box-tmp',
+                'Discrete-tmp'.
+
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of each object in self.spaces.
+
+        Returns:
+            tuple(tf.Tensor): A tuple of Tensor objects converted
+                from each Space in self.spaces. Each Tensor's
+                shape is modified by batch_dims.
+
+        """
+        return tuple(
+            s.to_tf_placeholder(type(s).__name__ + '-' + name, batch_dims)
+            for s in self.spaces)
+
+    @requires_theano
+    def to_theano_tensor(self, name, batch_dims):
+        """Create a theano tensor from the Space object.
+
+        Args:
+            name (str): name to append to the akro type when naming
+                the tensor.  e.g. When name is 'tmp' - 'Box-tmp',
+                'Discrete-tmp'.
+
+            batch_dims (:obj:`list`): batch dimensions to add to the
+                shape of each object in self.spaces.
+
+        Returns:
+            theano.tensor.TensorVariable: A tuple of Tensor objects converted
+                from each Space in self.spaces. Each Tensor's shape is
+                modified by batch_dims.
+
+        """
+        return tuple(
+            s.to_theano_tensor(type(s).__name__ + '-' + name, batch_dims)
+            for s in self.spaces)
