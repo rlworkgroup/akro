@@ -58,7 +58,7 @@ class Box(gym.spaces.Box, Space):
                 its first element.
 
         """
-        return np.asarray(obs).reshape((obs.shape[0], -1))
+        return np.asarray(obs).reshape((len(obs), -1))
 
     def unflatten_n(self, obs):
         """Return unflattened observation of obs.
@@ -71,7 +71,7 @@ class Box(gym.spaces.Box, Space):
                 its first element and self.shape.
 
         """
-        return np.asarray(obs).reshape((obs.shape[0], ) + self.shape)
+        return np.asarray(obs).reshape((len(obs), ) + self.shape)
 
     def __hash__(self):
         """

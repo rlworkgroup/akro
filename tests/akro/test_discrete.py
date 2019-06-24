@@ -53,6 +53,12 @@ class TestDiscrete(unittest.TestCase):
         res = disc.weighted_sample(weights)
         assert res >= 0 and res < disc.n
 
+    def test_weighted_sample_unnormalized(self):
+        disc = Discrete(4)
+        weights = np.array([1., 2., 3., 5.])
+        res = disc.weighted_sample(weights)
+        assert res >= 0 and res < disc.n
+
     def test_hash(self):
         disc = Discrete(10)
         assert disc.__hash__() == 10

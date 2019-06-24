@@ -84,6 +84,22 @@ class TestBox(unittest.TestCase):
         assert obs.shape == (3, 4, 3)
         assert arr.shape == (3, 3, 4)
 
+    def test_flatten_n_tuple(self):
+        box = Box(0.0, 1.0, (3, 4))
+        obs = ((([1, 2, 3], [3, 4, 5], [5, 6, 7],
+                 [7, 8, 9]), ([1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8, 9]),
+                ([1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8, 9])))
+        arr = box.flatten_n(obs)
+        assert arr.shape == (3, 12)
+
+    def test_unflatten_n_tuple(self):
+        box = Box(0.0, 1.0, (3, 4))
+        obs = ((([1, 2, 3], [3, 4, 5], [5, 6, 7],
+                 [7, 8, 9]), ([1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8, 9]),
+                ([1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8, 9])))
+        arr = box.unflatten_n(obs)
+        assert arr.shape == (3, 3, 4)
+
     def test_hash(self):
         box = Box(0.0, 1.0, (3, 4))
         assert box.__hash__() == 1213972508617964782

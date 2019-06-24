@@ -83,7 +83,8 @@ class Discrete(gym.spaces.Discrete, Space):
 
         """
         assert len(weights) == self.n
-        return np.random.choice(self.n, p=weights)
+        weights = np.asarray(weights)
+        return np.random.choice(self.n, p=weights / weights.sum())
 
     def __hash__(self):
         """
