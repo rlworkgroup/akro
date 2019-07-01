@@ -7,12 +7,16 @@ are drawn from the components of this Space.
 import gym.spaces
 import numpy as np
 
+import akro
 from akro.requires import requires_tf, requires_theano
 from akro.space import Space
 
 
 class Tuple(gym.spaces.Tuple, Space):
     """A Tuple of Spaces which produces samples which are Tuples of samples."""
+
+    def __init__(self, spaces):
+        super().__init__([akro.from_gym(space) for space in spaces])
 
     @property
     def flat_dim(self):
