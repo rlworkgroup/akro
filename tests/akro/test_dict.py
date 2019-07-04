@@ -4,9 +4,9 @@ import unittest
 
 import numpy as np
 
+from akro import Box
 from akro import Dict
 from akro import Discrete
-from akro import Box
 from akro import tf
 from akro import theano
 from akro.requires import requires_tf, requires_theano
@@ -27,70 +27,92 @@ class TestDict(unittest.TestCase):
         assert round_trip.contains(sample)
 
     def test_flat_dim(self):
-        d = Dict(collections.OrderedDict(position=Box(0, 10, (2,)),
-                                         velocity=Box(0, 10, (3,))))
+        d = Dict(
+            collections.OrderedDict(
+                position=Box(0, 10, (2, )), velocity=Box(0, 10, (3, ))))
         assert d.flat_dim == 5
 
     def test_flat_dim_with_keys(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
         assert d.flat_dim_with_keys(['position']) == 2
 
     def test_flatten(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
         f = np.array([1., 2., 3., 4., 5.])
-        s = collections.OrderedDict(position=np.array([1., 2.]),
-                                    velocity=np.array([3., 4., 5.]))
+        # Keys are intentionally in the "wrong" order.
+        s = collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))])
         assert (d.flatten(s) == f).all()
 
     def test_unflatten(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
         f = np.array([1., 2., 3., 4., 5.])
-        s = collections.OrderedDict(position=np.array([1., 2.]),
-                                    velocity=np.array([3., 4., 5.]))
+        # Keys are intentionally in the "wrong" order.
+        s = collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))])
         assert all((s[k] == v).all() for k, v in d.unflatten(f).items())
 
     def test_flatten_n(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
-        f = np.array([[1., 2., 3., 4., 5.],
-                      [6., 7., 8., 9., 0.]])
-        s = [collections.OrderedDict(position=np.array([1., 2.]),
-                                     velocity=np.array([3., 4., 5.])),
-             collections.OrderedDict(position=np.array([6., 7.]),
-                                     velocity=np.array([8., 9., 0.]))]
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
+        f = np.array([[1., 2., 3., 4., 5.], [6., 7., 8., 9., 0.]])
+        # Keys are intentionally in the "wrong" order.
+        s = [
+            collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))]),
+            collections.OrderedDict([('velocity', np.array([8., 9., 0.])),
+                                     ('position', np.array([6., 7.]))])
+        ]
         assert (d.flatten_n(s) == f).all()
 
     def test_unflatten_n(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
-        f = np.array([[1., 2., 3., 4., 5.],
-                      [6., 7., 8., 9., 0.]])
-        s = [collections.OrderedDict(position=np.array([1., 2.]),
-                                     velocity=np.array([3., 4., 5.])),
-             collections.OrderedDict(position=np.array([6., 7.]),
-                                     velocity=np.array([8., 9., 0.]))]
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
+        f = np.array([[1., 2., 3., 4., 5.], [6., 7., 8., 9., 0.]])
+        # Keys are intentionally in the "wrong" order.
+        s = [
+            collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))]),
+            collections.OrderedDict([('velocity', np.array([8., 9., 0.])),
+                                     ('position', np.array([6., 7.]))])
+        ]
         for i, fi in enumerate(d.unflatten_n(f)):
             assert all((s[i][k] == v).all() for k, v in fi.items())
 
     def test_flatten_with_keys(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
         f = np.array([3., 4., 5.])
-        s = collections.OrderedDict(position=np.array([1., 2.]),
-                                    velocity=np.array([3., 4., 5.]))
+        f_full = np.array([1., 2., 3., 4., 5.])
+        # Keys are intentionally in the "wrong" order.
+        s = collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))])
         assert (d.flatten_with_keys(s, ['velocity']) == f).all()
+        assert (d.flatten_with_keys(s,
+                                    ['velocity', 'position']) == f_full).all()
 
     def test_unflatten_with_keys(self):
-        d = Dict(collections.OrderedDict([('position', Box(0, 10, (2,))),
-                                          ('velocity', Box(0, 10, (3,)))]))
+        d = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
         f = np.array([3., 4., 5.])
-        s = collections.OrderedDict(position=np.array([1., 2.]),
-                                    velocity=np.array([3., 4., 5.]))
+        f_full = np.array([1., 2., 3., 4., 5.])
+        # Keys are intentionally in the "wrong" order.
+        s = collections.OrderedDict([('velocity', np.array([3., 4., 5.])),
+                                     ('position', np.array([1., 2.]))])
         assert all((s[k] == v).all()
                    for k, v in d.unflatten_with_keys(f, ['velocity']).items())
+        assert all((s[k] == v).all() for k, v in d.unflatten_with_keys(
+            f_full, ['velocity', 'position']).items())
 
     @requires_tf
     def test_convert_tf(self):

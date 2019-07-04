@@ -54,10 +54,7 @@ class Dict(gym.spaces.Dict, Space):
 
         """
         return np.concatenate(
-            [
-                space.flatten(xi)
-                for space, xi in zip(self.spaces.values(), x.values())
-            ],
+            [space.flatten(x[key]) for key, space in self.spaces.items()],
             axis=-1,
         )
 
@@ -112,9 +109,8 @@ class Dict(gym.spaces.Dict, Space):
         """
         return np.concatenate(
             [
-                self.spaces[key].flatten(xi)
-                for key, xi in zip(self.spaces.keys(), x.values())
-                if key in keys
+                space.flatten(x[key])
+                for key, space in self.spaces.items() if key in keys
             ],
             axis=-1,
         )
@@ -129,10 +125,14 @@ class Dict(gym.spaces.Dict, Space):
             collections.OrderedDict
 
         """
-        dims = np.array([self.spaces[key].flat_dim for key in keys])
+        dims = np.array([
+            space.flat_dim for key, space in self.spaces.items() if key in keys
+        ])
         flat_x = np.split(x, np.cumsum(dims)[:-1])
-        return collections.OrderedDict([(key, self.spaces[key].unflatten(xi))
-                                        for key, xi in zip(keys, flat_x)])
+        return collections.OrderedDict(
+            [(key, space.unflatten(xi))
+             for (key, space), xi in zip(self.spaces.items(), flat_x)
+             if key in keys])
 
     @requires_tf
     def to_tf_placeholder(self, name, batch_dims):
