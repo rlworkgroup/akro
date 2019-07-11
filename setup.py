@@ -4,7 +4,7 @@ from setuptools import setup
 # Required dependencies
 required = [
     # Please keep alphabetized
-    'gym==0.12.4',
+    'gym>=0.12.4',
     'numpy',
 ]
 
