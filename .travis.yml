@@ -37,7 +37,7 @@ script:
   - flake8 --version
   - flake8 src
   - flake8 --exclude=src,docs --extend-ignore=D
-  - pytest --cov=akro
+  - pytest -n $(nproc) --cov=akro
   - pushd docs && make html && popd
 
 after_script:
