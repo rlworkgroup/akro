@@ -103,7 +103,7 @@ class Box(gym.spaces.Box, Space):
                 the Box where the shape is modified by batch_dims.
 
         """
-        return tf.placeholder(
+        return tf.compat.v1.placeholder(
             dtype=self.dtype,
             shape=[None] * batch_dims + list(self.shape),
             name=name)

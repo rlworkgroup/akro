@@ -110,7 +110,7 @@ class Discrete(gym.spaces.Discrete, Space):
                 the Discrete obj where the shape is modified by batch_dims.
 
         """
-        return tf.placeholder(
+        return tf.compat.v1.placeholder(
             dtype=self.dtype,
             shape=[None] * batch_dims + [self.flat_dim],
             name=name)

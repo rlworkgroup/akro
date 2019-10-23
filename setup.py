@@ -10,7 +10,7 @@ required = [
 
 # Framework-specific dependencies
 extras = {
-    'tf': ['tensorflow'],
+    'tf': ['tensorflow<2.0'],
     'theano': ['theano'],
 }
 extras['all'] = list(set(sum(extras.values(), [])))
