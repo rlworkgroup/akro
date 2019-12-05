@@ -19,8 +19,7 @@ from akro.tuple import Tuple
 
 
 def from_gym(space):
-    """
-    Convert a gym.space to an akro.space.
+    """Convert a gym.space to an akro.space.
 
     Args:
         space(:obj:`gym.Space`): The Space object to convert.

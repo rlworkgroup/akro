@@ -71,8 +71,7 @@ class Discrete(gym.spaces.Discrete, Space):
         return self.n
 
     def weighted_sample(self, weights):
-        """
-        Compute a weighted sample of the elements in the Discrete Space.
+        """Compute a weighted sample of the elements in the Discrete Space.
 
         Args:
             weights (:obj:`list`): Values to use in the sample.
@@ -87,8 +86,7 @@ class Discrete(gym.spaces.Discrete, Space):
         return np.random.choice(self.n, p=weights / weights.sum())
 
     def __hash__(self):
-        """
-        Hash the Discrete Space.
+        """Hash the Discrete Space.
 
         Returns:
             int: A hash of the value n.
@@ -110,10 +108,10 @@ class Discrete(gym.spaces.Discrete, Space):
                 the Discrete obj where the shape is modified by batch_dims.
 
         """
-        return tf.compat.v1.placeholder(
-            dtype=self.dtype,
-            shape=[None] * batch_dims + [self.flat_dim],
-            name=name)
+        return tf.compat.v1.placeholder(dtype=self.dtype,
+                                        shape=[None] * batch_dims +
+                                        [self.flat_dim],
+                                        name=name)
 
     @requires_theano
     def to_theano_tensor(self, name, batch_dims):

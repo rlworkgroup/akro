@@ -74,8 +74,7 @@ class Box(gym.spaces.Box, Space):
         return np.asarray(obs).reshape((len(obs), ) + self.shape)
 
     def __hash__(self):
-        """
-        Hash the Box Space.
+        """Hash the Box Space.
 
         Returns:
             int: A hash of the low, high, and shape of the Box.
@@ -103,10 +102,10 @@ class Box(gym.spaces.Box, Space):
                 the Box where the shape is modified by batch_dims.
 
         """
-        return tf.compat.v1.placeholder(
-            dtype=self.dtype,
-            shape=[None] * batch_dims + list(self.shape),
-            name=name)
+        return tf.compat.v1.placeholder(dtype=self.dtype,
+                                        shape=[None] * batch_dims +
+                                        list(self.shape),
+                                        name=name)
 
     @requires_theano
     def to_theano_tensor(self, name, batch_dims):

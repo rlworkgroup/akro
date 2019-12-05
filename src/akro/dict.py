@@ -14,8 +14,7 @@ from akro.space import Space
 
 
 class Dict(gym.spaces.Dict, Space):
-    """
-    A dictionary of simpler spaces, e.g. Discrete, Box.
+    """A dictionary of simpler spaces, e.g. Discrete, Box.
 
     Example usage:
         self.observation_space = spaces.Dict({"position": spaces.Discrete(2),
@@ -24,8 +23,9 @@ class Dict(gym.spaces.Dict, Space):
 
     def __init__(self, spaces=None, **kwargs):
         super().__init__(spaces, **kwargs)
-        self.spaces = (collections.OrderedDict(
-            [(k, akro.from_gym(s)) for k, s in self.spaces.items()]))
+        self.spaces = (collections.OrderedDict([
+            (k, akro.from_gym(s)) for k, s in self.spaces.items()
+        ]))
 
     @property
     def flat_dim(self):
@@ -33,8 +33,7 @@ class Dict(gym.spaces.Dict, Space):
         return sum([space.flat_dim for _, space in self.spaces.items()])
 
     def flat_dim_with_keys(self, keys):
-        """
-        Return a flat dimension of the spaces specified by the keys.
+        """Return a flat dimension of the spaces specified by the keys.
 
         Returns:
             sum (int)
@@ -70,9 +69,10 @@ class Dict(gym.spaces.Dict, Space):
         """
         dims = np.array([s.flat_dim for s in self.spaces.values()])
         flat_x = np.split(x, np.cumsum(dims)[:-1])
-        return collections.OrderedDict(
-            [(key, self.spaces[key].unflatten(xi))
-             for key, xi in zip(self.spaces.keys(), flat_x)])
+        return collections.OrderedDict([
+            (key, self.spaces[key].unflatten(xi))
+            for key, xi in zip(self.spaces.keys(), flat_x)
+        ])
 
     def flatten_n(self, xs):
         """Return flattened observations xs.
@@ -100,8 +100,7 @@ class Dict(gym.spaces.Dict, Space):
         return [self.unflatten(x) for x in xs]
 
     def flatten_with_keys(self, x, keys):
-        """
-        Return flattened obs of spaces specified by the keys using x.
+        """Return flattened obs of spaces specified by the keys using x.
 
         Returns:
             list
@@ -116,8 +115,7 @@ class Dict(gym.spaces.Dict, Space):
         )
 
     def unflatten_with_keys(self, x, keys):
-        """
-        Return an unflattened observation.
+        """Return an unflattened observation.
 
         This is the inverse of `flatten_with_keys`.
 
@@ -129,10 +127,11 @@ class Dict(gym.spaces.Dict, Space):
             space.flat_dim for key, space in self.spaces.items() if key in keys
         ])
         flat_x = np.split(x, np.cumsum(dims)[:-1])
-        return collections.OrderedDict(
-            [(key, space.unflatten(xi))
-             for (key, space), xi in zip(self.spaces.items(), flat_x)
-             if key in keys])
+        return collections.OrderedDict([
+            (key, space.unflatten(xi))
+            for (key, space), xi in zip(self.spaces.items(), flat_x)
+            if key in keys
+        ])
 
     @requires_tf
     def to_tf_placeholder(self, name, batch_dims):

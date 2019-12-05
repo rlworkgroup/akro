@@ -86,8 +86,7 @@ class Tuple(gym.spaces.Tuple, Space):
         return unflat_obs_grouped
 
     def __hash__(self):
-        """
-        Hash the Tuple Space.
+        """Hash the Tuple Space.
 
         Returns:
             int: A hash of the Tuple's components.

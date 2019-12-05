@@ -1,3 +1,4 @@
+"""akro setuptools script."""
 from setuptools import find_packages
 from setuptools import setup
 
@@ -20,13 +21,12 @@ extras['dev'] = [
     # Please keep alphabetized
     'coverage',
     'flake8',
-    'flake8-docstrings',
+    'flake8-docstrings>=1.5.0',
     'flake8-import-order',
     'pep8-naming',
     'pre-commit',
-    # pydocstyle 4.x breaks flake8-docstrings 1.3.0
-    # See https://gitlab.com/pycqa/flake8-docstrings/issues/36
-    'pydocstyle<4.0.0',
+    'pycodestyle>=2.5.0',
+    'pydocstyle>=4.0.0',
     'pylint',
     'pytest>=4.4.0',  # Required for pytest-xdist
     'pytest-cov',
