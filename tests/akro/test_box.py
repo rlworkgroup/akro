@@ -10,6 +10,7 @@ from akro.requires import requires_tf, requires_theano
 
 
 class TestBox(unittest.TestCase):
+
     def test_pickleable(self):
         obj = Box(-1.0, 1.0, (3, 4))
         round_trip = pickle.loads(pickle.dumps(obj))
@@ -99,6 +100,22 @@ class TestBox(unittest.TestCase):
                 ([1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8, 9])))
         arr = box.unflatten_n(obs)
         assert arr.shape == (3, 3, 4)
+
+    def test_concat(self):
+        box1 = Box(0.0, 1.0, (3, 4))
+        box2 = Box(1.0, 2.0, (2, 3))
+        concat_box = box1.concat(box2)
+
+        expected_shape = box1.flat_dim + box2.flat_dim
+        assert concat_box.shape == expected_shape
+        assert np.array_equal(
+            concat_box.low,
+            np.concatenate([np.zeros(box1.flat_dim),
+                            np.ones(box2.flat_dim)]))
+        assert np.array_equal(
+            concat_box.high,
+            np.concatenate([np.ones(box1.flat_dim),
+                            np.full(box2.flat_dim, 2)]))
 
     def test_hash(self):
         box = Box(0.0, 1.0, (3, 4))

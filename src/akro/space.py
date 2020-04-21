@@ -62,6 +62,18 @@ class Space(abc.ABC, gym.spaces.Space):
 
         """
 
+    @abc.abstractmethod
+    def concat(self, other):
+        """Concatenate with another space of the same type.
+
+        Args:
+            other (Space): A space to be concatenated with this space.
+
+        Returns:
+            Space: A concatenated space.
+
+        """
+
     @property
     def flat_dim(self):
         """Return the length of the flattened vector of the space."""

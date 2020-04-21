@@ -19,3 +19,16 @@ class Image(Box):
     def __init__(self, shape):
         assert len(shape) <= 3, 'Images must have at most three dimensions'
         super(Box, self).__init__(low=0, high=255, shape=shape, dtype=np.uint8)
+
+    def concat(self, other):
+        """Concatenate with another Image space.
+
+        Args:
+            other (Image): A space to be concatenated with this space.
+
+        Returns:
+            Image: A concatenated space.
+
+        """
+        assert isinstance(other, Image)
+        return super().concat(other)

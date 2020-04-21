@@ -2,6 +2,7 @@ import pickle
 import unittest
 
 import numpy as np
+import pytest
 import tensorflow as tf
 
 from akro import Discrete
@@ -10,6 +11,7 @@ from akro.requires import requires_tf, requires_theano
 
 
 class TestDiscrete(unittest.TestCase):
+
     def test_pickleable(self):
         obj = Discrete(10)
         round_trip = pickle.loads(pickle.dumps(obj))
@@ -58,6 +60,12 @@ class TestDiscrete(unittest.TestCase):
         weights = np.array([1., 2., 3., 5.])
         res = disc.weighted_sample(weights)
         assert res >= 0 and res < disc.n
+
+    def test_concat(self):
+        with pytest.raises(NotImplementedError):
+            disc1 = Discrete(4)
+            disc2 = Discrete(4)
+            disc1.concat(disc2)
 
     def test_hash(self):
         disc = Discrete(10)

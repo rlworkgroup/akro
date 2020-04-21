@@ -133,6 +133,35 @@ class Dict(gym.spaces.Dict, Space):
             if key in keys
         ])
 
+    def concat(self, other):
+        """Concatenate with another Dict space.
+
+        If a key exists in both Dict, the two associated spaces will be concat.
+        If a key exists in only one Dict, the associated space will be copied
+        to the new Dict.
+
+        Args:
+            other (Dict): A space to be concatenated with this space.
+
+        Returns:
+            Dict: A concatenated space.
+
+        """
+        assert isinstance(other, Dict)
+
+        spaces = dict()
+        for key, space in self.spaces.items():
+            if key in other.spaces:
+                spaces[key] = space.concat(other.spaces[key])
+            else:
+                spaces[key] = space
+
+        for key, space in other.spaces.items():
+            if key not in self.spaces:
+                spaces[key] = space
+
+        return Dict(spaces)
+
     @requires_tf
     def to_tf_placeholder(self, name, batch_dims):
         """Create a tensor placeholder from the Space object.

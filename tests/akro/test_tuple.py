@@ -12,6 +12,7 @@ from akro.requires import requires_tf, requires_theano
 
 
 class TestTuple(unittest.TestCase):
+
     def test_pickleable(self):
         tup = Tuple((Discrete(3), Discrete(2)))
         round_trip = pickle.loads(pickle.dumps(tup))
@@ -49,6 +50,13 @@ class TestTuple(unittest.TestCase):
         obs = disc.flatten_n(np.asarray([0, 1, 0, 1, 2]))
         ret = tup.unflatten_n(obs)
         assert ret == [(0, 0)]
+
+    def test_concat(self):
+        tup1 = Tuple((Box(0, 1, (5, )), Box(0, 1, (10, ))))
+        tup2 = Tuple((Box(0, 1, (5, )), Box(0, 1, (10, ))))
+        concat_tup = tup1.concat(tup2)
+
+        assert concat_tup.flat_dim == 30
 
     def test_hash(self):
         tup = Tuple((Discrete(3), Discrete(2)))

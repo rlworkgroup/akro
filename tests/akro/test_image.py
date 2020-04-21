@@ -25,3 +25,10 @@ class TestImage(unittest.TestCase):
     def test_dtype(self):
         img = Image((1, 1, 1))
         assert img.dtype == np.uint8
+
+    def test_concat(self):
+        img1 = Image((5, 5, 3))
+        img2 = Image((10, 10, 3))
+        concat_image = img1.concat(img2)
+
+        assert concat_image.flat_dim == img1.flat_dim + img2.flat_dim

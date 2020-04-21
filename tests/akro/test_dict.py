@@ -13,6 +13,7 @@ from akro.requires import requires_tf, requires_theano
 
 
 class TestDict(unittest.TestCase):
+
     def test_pickleable(self):
         motion_dict = {'position': Discrete(2), 'velocity': Discrete(3)}
         sample = {
@@ -28,8 +29,8 @@ class TestDict(unittest.TestCase):
 
     def test_flat_dim(self):
         d = Dict(
-            collections.OrderedDict(
-                position=Box(0, 10, (2, )), velocity=Box(0, 10, (3, ))))
+            collections.OrderedDict(position=Box(0, 10, (2, )),
+                                    velocity=Box(0, 10, (3, ))))
         assert d.flat_dim == 5
 
     def test_flat_dim_with_keys(self):
@@ -113,6 +114,18 @@ class TestDict(unittest.TestCase):
                    for k, v in d.unflatten_with_keys(f, ['velocity']).items())
         assert all((s[k] == v).all() for k, v in d.unflatten_with_keys(
             f_full, ['velocity', 'position']).items())
+
+    def test_concat(self):
+        d1 = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('velocity', Box(0, 10, (3, )))]))
+        d2 = Dict(
+            collections.OrderedDict([('position', Box(0, 10, (2, ))),
+                                     ('gravity', Box(0, 10, (3, )))]))
+        concat_d = d1.concat(d2)
+
+        assert (sorted(concat_d.spaces.keys()) == sorted(
+            ['position', 'velocity', 'gravity']))
 
     @requires_tf
     def test_convert_tf(self):

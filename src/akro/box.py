@@ -73,6 +73,27 @@ class Box(gym.spaces.Box, Space):
         """
         return np.asarray(obs).reshape((len(obs), ) + self.shape)
 
+    def concat(self, other):
+        """Concatenate with another Box space.
+
+        Note that the dimension of both boxes will be flatten.
+
+        Args:
+            other (Box): A space to be concatenated with this space.
+
+        Returns:
+            Box: A concatenated space.
+
+        """
+        assert isinstance(other, Box)
+
+        first_lb, first_ub = self.bounds
+        second_lb, second_ub = other.bounds
+        first_lb, first_ub = first_lb.flatten(), first_ub.flatten()
+        second_lb, second_ub = second_lb.flatten(), second_ub.flatten()
+        return Box(np.concatenate([first_lb, second_lb]),
+                   np.concatenate([first_ub, second_ub]))
+
     def __hash__(self):
         """Hash the Box Space.
 

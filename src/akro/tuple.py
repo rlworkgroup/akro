@@ -85,6 +85,19 @@ class Tuple(gym.spaces.Tuple, Space):
         unflat_obs_grouped = list(zip(*unflat_obs))
         return unflat_obs_grouped
 
+    def concat(self, other):
+        """Concatenate with another Tuple space.
+
+        Args:
+            other (Tuple): A space to be concatenated with this space.
+
+        Returns:
+            Tuple: A concatenated space.
+
+        """
+        assert isinstance(other, Tuple)
+        return Tuple(self.spaces + other.spaces)
+
     def __hash__(self):
         """Hash the Tuple Space.
 

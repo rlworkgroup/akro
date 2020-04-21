@@ -85,6 +85,18 @@ class Discrete(gym.spaces.Discrete, Space):
         weights = np.asarray(weights)
         return np.random.choice(self.n, p=weights / weights.sum())
 
+    def concat(self, other):
+        """Concatenate with another space of the same type.
+
+        Args:
+            other (Space): A space to be concatenated with this space.
+
+        Returns:
+            Space: A concatenated space.
+
+        """
+        raise NotImplementedError
+
     def __hash__(self):
         """Hash the Discrete Space.
 

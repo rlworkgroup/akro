@@ -48,7 +48,22 @@ def from_gym(space, is_image=False):
         raise TypeError
 
 
+def concat(first, second):
+    """Concatenate two spaces of the same type.
+
+    Args:
+        first (Space): The first space.
+        second (Space): The second space.
+
+    Returns:
+        Space: A concatenated space.
+
+    """
+    assert type(first) == type(second)
+    return first.concat(second)
+
+
 __all__ = [
     'Space', 'Box', 'Dict', 'Discrete', 'Image', 'Tuple', 'from_gym', 'tf',
-    'theano'
+    'theano', 'concat'
 ]
