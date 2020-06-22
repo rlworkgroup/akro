@@ -29,10 +29,10 @@ class TestBox(unittest.TestCase):
         assert box.dtype == type2
 
     def test_invalid_env(self):
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(ValueError):
             Box(0.0, 1.0)
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(Exception):
             Box(np.array([-1.0, -2.0]), np.array([1.0, 2.0]), (2, 2))
 
     def test_default_float32_env(self):
