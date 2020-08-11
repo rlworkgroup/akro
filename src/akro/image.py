@@ -32,3 +32,31 @@ class Image(Box):
         """
         assert isinstance(other, Image)
         return super().concat(other)
+
+    def flatten(self, x):
+        """Return a flattened observation x.
+
+        Note: Image observations should never be flattened, so a call to
+            flatten returns the observation
+
+        Returns:
+            np.ndarray: An array of x collapsed into one dimension.
+
+        """
+        return x
+
+    def flatten_n(self, obs):
+        """Return flattened observations obs.
+
+        Note: Image observations should never be flattened, so a call to
+            flatten returns the observation
+
+        Args:
+            obs (:obj:`Iterable`): The object to reshape and flatten
+
+        Returns:
+            np.ndarray: An array of obs in a shape inferred by the size of
+                its first element.
+
+        """
+        return x

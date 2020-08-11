@@ -32,3 +32,11 @@ class TestImage(unittest.TestCase):
         concat_image = img1.concat(img2)
 
         assert concat_image.flat_dim == img1.flat_dim + img2.flat_dim
+
+    def test_does_not_flatten(self):
+        """Images should never be flattenable."""
+        obj = Image((3, 3, 3))
+        x = obj.sample()
+        assert np.all(np.array_equal(x, obj.flatten(x)))
+        l = np.array([x, x, x])
+        assert np.all(np.array_equal(l, obj.flatten(l)))
