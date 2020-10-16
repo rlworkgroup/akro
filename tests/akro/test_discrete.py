@@ -68,8 +68,9 @@ class TestDiscrete(unittest.TestCase):
             disc1.concat(disc2)
 
     def test_hash(self):
-        disc = Discrete(10)
-        assert disc.__hash__() == 10
+        disc1 = Discrete(10)
+        disc2 = Discrete(10)
+        assert disc1.__hash__() == disc2.__hash__()
 
     @requires_tf
     def test_convert_tf(self):

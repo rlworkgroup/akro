@@ -118,8 +118,9 @@ class TestBox(unittest.TestCase):
                             np.full(box2.flat_dim, 2)]))
 
     def test_hash(self):
-        box = Box(0.0, 1.0, (3, 4))
-        assert box.__hash__() == 1213972508617964782
+        box1 = Box(0.0, 1.0, (3, 4))
+        box2 = Box(0.0, 1.0, (3, 4))
+        assert box1.__hash__() == box2.__hash__()
 
     @requires_tf
     def test_convert_tf(self):

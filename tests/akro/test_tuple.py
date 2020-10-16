@@ -59,8 +59,9 @@ class TestTuple(unittest.TestCase):
         assert concat_tup.flat_dim == 30
 
     def test_hash(self):
-        tup = Tuple((Discrete(3), Discrete(2)))
-        assert tup.__hash__() == 3713083796995235906
+        tup1 = Tuple((Discrete(3), Discrete(2)))
+        tup2 = Tuple((Discrete(3), Discrete(2)))
+        assert tup1.__hash__() == tup2.__hash__()
 
     @requires_tf
     def test_convert_tf(self):
